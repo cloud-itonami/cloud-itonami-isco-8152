@@ -1,0 +1,33 @@
+;; What this vertical's robot physically does, declared for
+;; kotoba.robotics.process (kotoba-lang/robotics). `kbb -M:physics` runs it.
+;;
+;; README "Robotics premise": a mill scheduling/logistics coordination robot
+;; does crew scheduling, production-run/inventory logging and yarn/thread-stock
+;; supply for a weaving and knitting crew; it never operates the looms or
+;; knitting machines. Its physical work is yarn logistics: loading yarn cones
+;; onto a creel and hauling a trolley of yarn stock from the store to a loom.
+;;
+;; Every number without a cited source is marked `estimate` in its :basis.
+;; Replacing an estimate with a sourced value is this bot's growth work.
+{:physics/schema "itonami.physical-ai.spec.v1"
+ :repo "cloud-itonami/cloud-itonami-isco-8152"
+ :cases
+ [{:id :yarn-cone-to-creel
+   :kind :manipulator
+   :procedure "arm lifts a yarn cone from the supply trolley onto an upper creel peg"
+   :params {:l1-m 0.50 :l2-m 0.45 :m1-kg 4.0 :m2-kg 3.0
+            :from [0.60 0.10] :to [0.30 0.80] :duration-s 2.0 :steps 400}
+   :sweep {:param :payload-kg :values [1.0 2.0 3.0 4.0 5.0]}
+   :quantity :peak-tau1-nm
+   :limit {:max 60.0 :basis "estimate: continuous shoulder torque of a light collaborative arm (~5 kg class)"}
+   :boundary {:lo 0.1 :hi 20.0}}
+  {:id :yarn-trolley-to-loom
+   :kind :transport
+   :procedure "AMR tows a trolley of yarn stock from the yarn store to a loom along the mill aisle"
+   :params {:mass-kg 80.0 :payload-kg 120.0 :v-max-mps 1.0 :a-max-mps2 0.4
+            :brake-decel-mps2 0.8 :drive-force-n 200.0 :crr 0.02
+            :cog-height-m 0.60 :support-half-length-m 0.35 :max-time-s 1200.0}
+   :sweep {:param :distance-m :values [40.0 80.0 120.0 160.0 200.0]}
+   :quantity :cycle-time-s
+   :limit {:max 150.0 :basis "estimate: one supply leg must finish within the ~3 min a loom can run on its remaining package after the low-yarn alert"}
+   :boundary {:lo 10.0 :hi 400.0}}]}
