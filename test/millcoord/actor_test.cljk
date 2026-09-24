@@ -1,5 +1,5 @@
 (ns millcoord.actor-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [kotoba.test :refer [deftest is testing]]
             [millcoord.actor :as actor]
             [millcoord.store :as store]))
 
